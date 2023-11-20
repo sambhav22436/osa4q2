@@ -8,20 +8,12 @@
 sem_t car_mutex, passenger_mutex, board_mutex, offboard_mutex;
 int passenger_count = 0, total_passengers, car_capacity;
 
-void* car(void* args) {
-    while (1) {
-        load();
-        unload();
-    }
-}
-
-void* passenger(void* args) {
-    int id = *((int*)args);
-    while (1) {
-        board(id);
-        offboard(id);
-    }
-}
+void* car(void* args);
+void* passenger(void* args);
+void load();
+void unload();
+void board(int id);
+void offboard(int id);
 
 void load() {
     sem_wait(&car_mutex);
@@ -64,6 +56,23 @@ void offboard(int id) {
     }
     sem_post(&passenger_mutex);
     sem_post(&offboard_mutex);
+}
+
+void* car(void* args) {
+    while (1) {
+        load();
+        unload();
+    }
+    return NULL;
+}
+
+void* passenger(void* args) {
+    int id = *((int*)args);
+    while (1) {
+        board(id);
+        offboard(id);
+    }
+    return NULL;
 }
 
 int main() {
